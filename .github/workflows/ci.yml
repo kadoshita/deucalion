@@ -1,0 +1,19 @@
+name: Node.js CI
+
+on:
+  push:
+    paths:
+      - '**.ts'
+      - '**.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm run lint
+    - run: npm test
