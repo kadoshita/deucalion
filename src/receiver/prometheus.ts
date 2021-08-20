@@ -1,30 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FastifyRequest, FastifyReply, RouteHandlerMethod } from 'fastify';
-
-export type AlertManagerStatus = 'resolved' | 'firing';
-
-export interface AlertManagerWebhookRequest {
-    version: string;
-    groupKey: string;
-    truncatedAlerts: number;
-    status: AlertManagerStatus;
-    receiver: string;
-    groupLabels: any;
-    commonLabels: any;
-    commonAnnotations: any;
-    externalURL: string;
-    alerts: AlertsEntity[];
-}
-export interface AlertsEntity {
-    status: AlertManagerStatus;
-    labels: any;
-    annotations: any;
-    startsAt: string;
-    endsAt: string;
-    generatorURL: string;
-    fingerprint: string;
-}
+import { PrometheusMessage } from '../message';
 
 export const prometheus: RouteHandlerMethod = async (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.send('OK');
+    try {
+        const message = new PrometheusMessage(req.body);
+        return reply.send('OK');
+    } catch (err) {
+        console.error(err.message);
+        return reply.code(400).send();
+    }
 };
