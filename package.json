@@ -7,7 +7,7 @@
     "build": "tsc",
     "dev": "ts-node-dev ./src/main.ts",
     "start": "node ./build/main.js",
-    "test": "jest",
+    "test": "jest --config jest.config.json",
     "lint": "eslint ./src/ ./__tests__/ --ext .ts",
     "fix": "eslint ./src/ ./__tests__/ --ext .ts --fix",
     "format": "prettier --write ./**/*.ts"
