@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Message, MessageType } from '.';
 import { randomUUID } from 'crypto';
+import { Message, MessageType } from './messageInterface';
 
 export type AlertManagerStatus = 'resolved' | 'firing';
 

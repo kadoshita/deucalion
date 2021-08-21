@@ -1,5 +1,5 @@
 import { slackMessageGenerator } from '../generator';
-import { Message } from '../message';
+import { Message } from '../message/messageInterface';
 
 export const handler = async (message: Message): Promise<void> => {
     switch (message.type) {
