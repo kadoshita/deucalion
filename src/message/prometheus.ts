@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Message } from '.';
+import { Message, MessageType } from '.';
 import { randomUUID } from 'crypto';
 
 export type AlertManagerStatus = 'resolved' | 'firing';
@@ -28,6 +28,7 @@ export interface AlertsEntity {
 
 export class PrometheusMessage implements Message {
     readonly id: string;
+    readonly type: MessageType = 'prometheus';
     readonly message: AlertManagerWebhookRequest;
     constructor(private readonly rawMessage: any) {
         this.id = randomUUID();
