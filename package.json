@@ -4,7 +4,7 @@
   "description": "Alert management system for prometheus.",
   "main": "build/main.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build tsconfig.json",
     "dev": "ts-node-dev ./src/main.ts",
     "start": "node ./build/main.js",
     "test": "jest --config jest.config.json",
