@@ -31,7 +31,7 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
     });
     const slackMessage: SlackMessageAttachment[] = message.message.alerts.map((alert: AlertsEntity) => {
         const attachment: SlackMessageAttachment = {
-            color: (alert.status === 'resolved') ? '#D1A14D' : severityToColor(alert.labels.severity),
+            color: (alert.status === 'resolved') ? '#359C4C' : severityToColor(alert.labels.severity),
             blocks: [
                 {
                     type: 'header',
