@@ -23,7 +23,8 @@ describe('prometheus message', () => {
                         severity: 'critical'
                     },
                     annotations: {
-                        title: 'dummy'
+                        title: 'dummy',
+                        description: 'sample message'
                     },
                     startsAt: (new Date()).toISOString(),
                     endsAt: '',

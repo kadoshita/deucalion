@@ -4,6 +4,7 @@ import * as router from '../../src/router';
 
 describe('router', () => {
     let slackMessageGeneratorMock: jest.SpyInstance;
+    
     beforeEach(() => {
         slackMessageGeneratorMock = jest.spyOn(slackMessageGenerator, 'handle');
     });
@@ -33,7 +34,8 @@ describe('router', () => {
                         severity: 'critical'
                     },
                     annotations: {
-                        title: 'dummy'
+                        title: 'dummy',
+                        description: 'sample message'
                     },
                     startsAt: (new Date()).toISOString(),
                     endsAt: '',

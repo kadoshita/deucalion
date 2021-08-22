@@ -4,6 +4,7 @@ import { receiver } from '../../src/receiver';
 
 describe('prometheus receiver', () => {
     let server: FastifyInstance;
+
     beforeAll(() => {
         server = fastify();
         server.register(receiver, { prefix: '/api/receiver' });
@@ -35,7 +36,8 @@ describe('prometheus receiver', () => {
                         severity: 'critical'
                     },
                     annotations: {
-                        title: 'dummy'
+                        title: 'dummy',
+                        description: 'sample message'
                     },
                     startsAt: (new Date()).toISOString(),
                     endsAt: '',

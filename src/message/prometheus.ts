@@ -43,6 +43,7 @@ export class PrometheusMessage implements Message {
     private isValidMessage(msg: any): msg is AlertManagerWebhookRequest {
         if (!(msg.version && typeof msg.version === 'string')) return false;
         else if (!(msg.status && typeof msg.status === 'string' && ['resolved', 'firing'].includes(msg.status))) return false;
+        else if (!(msg.alerts && msg.alerts.length > 0 && msg.alerts[0].status && msg.alerts[0].labels && msg.alerts[0].annotations)) return false;
         else return true;
     }
 }
