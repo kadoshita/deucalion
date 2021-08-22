@@ -105,7 +105,7 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
                         },
                         {
                             type: 'plain_text',
-                            text: (new Date(alert.startsAt)).toLocaleString(),
+                            text: (new Date(alert.startsAt)).toLocaleString('ja-JP'),
                             emoji: true
                         }
                     ]
