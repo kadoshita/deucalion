@@ -119,6 +119,42 @@ describe('slackMessageGenerator', () => {
                             emoji: true
                         }
                     ]
+                },
+                {
+                    type: 'divider'
+                },
+                {
+                    type: 'section',
+                    fields: [
+                        {
+                            type: 'plain_text',
+                            text: 'Start At',
+                            emoji: true
+                        },
+                        {
+                            type: 'plain_text',
+                            text: dummyData.alerts[0].startsAt,
+                            emoji: true
+                        }
+                    ]
+                },
+                {
+                    type: 'divider'
+                },
+                {
+                    type: 'section',
+                    fields: [
+                        {
+                            type: 'plain_text',
+                            text: 'End At',
+                            emoji: true
+                        },
+                        {
+                            type: 'plain_text',
+                            text: dummyData.alerts[0].endsAt,
+                            emoji: true
+                        }
+                    ]
                 }
             ]
         }];

@@ -91,6 +91,42 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
                             emoji: true
                         }
                     ]
+                },
+                {
+                    type: 'divider'
+                },
+                {
+                    type: 'section',
+                    fields: [
+                        {
+                            type: 'plain_text',
+                            text: 'Start At',
+                            emoji: true
+                        },
+                        {
+                            type: 'plain_text',
+                            text: alert.startsAt,
+                            emoji: true
+                        }
+                    ]
+                },
+                {
+                    type: 'divider'
+                },
+                {
+                    type: 'section',
+                    fields: [
+                        {
+                            type: 'plain_text',
+                            text: 'End At',
+                            emoji: true
+                        },
+                        {
+                            type: 'plain_text',
+                            text: alert.endsAt,
+                            emoji: true
+                        }
+                    ]
                 }
             ]
         };
