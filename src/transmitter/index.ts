@@ -1,0 +1,1 @@
+export * as slackTransmitter from './slack';
