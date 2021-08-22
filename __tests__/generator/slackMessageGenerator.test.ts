@@ -49,7 +49,7 @@ describe('slackMessageGenerator', () => {
                         title: 'dummy',
                         description: 'sample message'
                     },
-                    startsAt: (new Date()).toISOString(),
+                    startsAt: '2021-08-22T06:12:57.011Z',
                     endsAt: '',
                     generatorURL: 'example.com',
                     fingerprint: ''
@@ -133,7 +133,7 @@ describe('slackMessageGenerator', () => {
                         },
                         {
                             type: 'plain_text',
-                            text: dummyData.alerts[0].startsAt,
+                            text: '2021/8/22 15:12:57',
                             emoji: true
                         }
                     ]
