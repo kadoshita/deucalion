@@ -1,4 +1,4 @@
-export type MessageType = 'prometheus' | 'unknown';
+export type MessageType = 'prometheus' | 'slack' | 'unknown';
 
 export interface Message {
     readonly id: string;
