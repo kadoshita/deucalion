@@ -37,6 +37,8 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "@slack/web-api": "^6.4.0",
+    "dotenv": "^10.0.0",
     "fastify": "^3.20.2",
     "node-fetch": "^2.6.1"
   }
