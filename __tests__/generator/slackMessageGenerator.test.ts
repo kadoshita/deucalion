@@ -3,7 +3,6 @@ import * as grafana from '../../src/external/grafana';
 import { slackMessageGenerator } from '../../src/generator';
 import { AlertManagerWebhookRequest, PrometheusMessage } from '../../src/message';
 import { SlackMessage, SlackMessageAttachment } from '../../src/message/slack';
-import { slackTransmitter } from '../../src/transmitter';
 
 describe('slackMessageGenerator', () => {
     let getGraphImageURLMock: jest.SpyInstance;
