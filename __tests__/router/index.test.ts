@@ -4,7 +4,7 @@ import * as router from '../../src/router';
 
 describe('router', () => {
     let slackMessageGeneratorMock: jest.SpyInstance;
-    
+
     beforeEach(() => {
         slackMessageGeneratorMock = jest.spyOn(slackMessageGenerator, 'handle');
     });
@@ -21,6 +21,7 @@ describe('router', () => {
             receiver: 'webhook',
             groupLabels: {},
             commonLabels: {
+                alertname: 'dummy',
                 instance: 'localhost:9000'
             },
             commonAnnotations: {

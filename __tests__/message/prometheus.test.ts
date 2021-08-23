@@ -10,6 +10,7 @@ describe('prometheus message', () => {
             receiver: 'webhook',
             groupLabels: {},
             commonLabels: {
+                alertname: 'dummy',
                 instance: 'localhost:9000'
             },
             commonAnnotations: {
