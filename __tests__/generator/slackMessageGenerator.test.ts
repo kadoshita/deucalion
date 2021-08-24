@@ -32,6 +32,7 @@ describe('slackMessageGenerator', () => {
             receiver: 'webhook',
             groupLabels: {},
             commonLabels: {
+                alertname: 'dummy',
                 instance: 'localhost:9000'
             },
             commonAnnotations: {
@@ -42,14 +43,17 @@ describe('slackMessageGenerator', () => {
                 {
                     status: 'firing',
                     labels: {
-                        severity: 'critical'
+                        severity: 'critical',
+                        instance: 'localhost:9000'
                     },
                     annotations: {
                         title: 'dummy',
-                        description: 'sample message'
+                        description: 'sample message',
+                        grafana_pannel_id: '0',
+                        grafana_url: 'https://example.com'
                     },
                     startsAt: '2021-08-22T06:12:57.011Z',
-                    endsAt: '',
+                    endsAt: '2021-08-22T06:13:57.011Z',
                     generatorURL: 'example.com',
                     fingerprint: ''
                 }
@@ -150,7 +154,7 @@ describe('slackMessageGenerator', () => {
                         },
                         {
                             type: 'plain_text',
-                            text: dummyData.alerts[0].endsAt,
+                            text: '2021/8/22 15:13:57',
                             emoji: true
                         }
                     ]

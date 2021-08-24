@@ -11,15 +11,30 @@ export interface AlertManagerWebhookRequest {
     status: AlertManagerStatus;
     receiver: string;
     groupLabels: any;
-    commonLabels: any;
+    commonLabels: {
+        alertname: string;
+        instance: string;
+        [key: string]: any;
+    };
     commonAnnotations: any;
     externalURL: string;
     alerts: AlertsEntity[];
 }
 export interface AlertsEntity {
     status: AlertManagerStatus;
-    labels: any;
-    annotations: any;
+    labels: {
+        severity: string;
+        [key: string]: any;
+    };
+    annotations: {
+        title: string;
+        description: string;
+        value?: string;
+        grafana_url?: string;
+        grafana_pannel_id?: string;
+        query?: string;
+        [key: string]: any;
+    };
     startsAt: string;
     endsAt: string;
     generatorURL: string;

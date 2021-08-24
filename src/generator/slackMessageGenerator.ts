@@ -23,13 +23,25 @@ const severityToColor = (severity: string): SlackAttachmentColor => {
     }
 };
 const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage) => {
-    const image_url = await getGraphImageURL({
-        start_at: (new Date()),
-        end_at: (new Date()),
-        metrics: 'cpu',
-        instance: 'localhost:9000'
-    });
-    const slackMessage: SlackMessageAttachment[] = message.message.alerts.map((alert: AlertsEntity) => {
+    const alertPromises = message.message.alerts.map(async (alert: AlertsEntity) => {
+
+        let image_url = '';
+        if (alert.annotations.grafana_url && alert.annotations.grafana_pannel_id) {
+            let startAt = new Date(alert.startsAt);
+            if (Date.now() - startAt.getTime() <= 3600 * 1000) {
+                startAt = new Date(Date.now() - 3600 * 1000);
+            }
+            const endAt = new Date();
+
+            image_url = await getGraphImageURL({
+                url: alert.annotations.grafana_url || '',
+                panelId: alert.annotations.grafana_pannel_id || '',
+                startAt,
+                endAt,
+                instance: message.message.commonLabels.instance
+            });
+        }
+
         const attachment: SlackMessageAttachment = {
             color: (alert.status === 'resolved') ? '#359C4C' : severityToColor(alert.labels.severity),
             blocks: [
@@ -123,7 +135,7 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
                         },
                         {
                             type: 'plain_text',
-                            text: alert.endsAt,
+                            text: (new Date(alert.endsAt)).toLocaleString('ja-JP'),
                             emoji: true
                         }
                     ]
@@ -132,5 +144,6 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
         };
         return attachment;
     });
+    const slackMessage: SlackMessageAttachment[] = await Promise.all(alertPromises);
     return slackMessage;
 };
