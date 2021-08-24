@@ -1,9 +1,10 @@
 {
-  "preset": "ts-jest",
-  "testMatch": [
-    "**/__tests__/**/*.test.[jt]s?(x)"
-  ],
-  "setupFilesAfterEnv": [
-    "./__tests__/utils/slackTransmitterSendMock.ts"
-  ]
+    "preset": "ts-jest",
+    "testMatch": [
+        "**/__tests__/**/*.test.[jt]s?(x)"
+    ],
+    "setupFilesAfterEnv": [
+        "./__tests__/utils/slackTransmitterSendMock.ts",
+        "./__tests__/utils/externalGrafana.ts"
+    ]
 }
