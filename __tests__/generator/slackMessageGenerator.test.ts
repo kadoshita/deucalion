@@ -53,7 +53,7 @@ describe('slackMessageGenerator', () => {
                         grafana_url: 'https://example.com'
                     },
                     startsAt: '2021-08-22T06:12:57.011Z',
-                    endsAt: '',
+                    endsAt: '2021-08-22T06:13:57.011Z',
                     generatorURL: 'example.com',
                     fingerprint: ''
                 }
@@ -154,7 +154,7 @@ describe('slackMessageGenerator', () => {
                         },
                         {
                             type: 'plain_text',
-                            text: dummyData.alerts[0].endsAt,
+                            text: '2021/8/22 15:13:57',
                             emoji: true
                         }
                     ]
