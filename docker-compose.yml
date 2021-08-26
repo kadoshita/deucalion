@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  deucalion:
+    image: ghcr.io/kadoshita/deucalion
+    environment:
+      NODE_ENV: production
+      SLACK_API_TOKEN: 
+      SLACK_POST_CHANNEL_ID: 
+      S3_ENDPOINT_URL: 
+      GRAFANA_API_KEY: 
+      OCI_OBJECT_STORAGE_URL: 
+      OCI_ACCESS_KEY: 
+      OCI_SECRET_KEY: 
+      OCI_OBJECT_STORAGE_REGION: 
+      OCI_OBJECT_STORAGE_NAMESPACE: 
+      OCI_OBJECT_STORAGE_BUCKET: 
+    ports:
+      - 3001:3000
