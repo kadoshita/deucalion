@@ -1,3 +1,4 @@
+import { query as PrometheusQuery } from '../external/prometheus';
 import { getGraphImageURL } from '../external/grafana';
 import { AlertsEntity, PrometheusMessage } from '../message';
 import { Message } from '../message/messageInterface';
@@ -26,6 +27,7 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
     const alertPromises = message.message.alerts.map(async (alert: AlertsEntity) => {
 
         let image_url = '';
+        let current_value = '';
         if (alert.annotations.grafana_url && alert.annotations.grafana_pannel_id) {
             let startAt = new Date(alert.startsAt);
             if (Date.now() - startAt.getTime() <= 3600 * 1000) {
@@ -40,6 +42,9 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
                 endAt,
                 instance: message.message.commonLabels.instance
             });
+        }
+        if (alert.annotations.query) {
+            current_value = await PrometheusQuery(alert.annotations.query);
         }
 
         const attachment: SlackMessageAttachment = {
@@ -81,7 +86,7 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
                         },
                         {
                             type: 'plain_text',
-                            text: '93.37%',
+                            text: current_value,
                             emoji: true
                         }
                     ]
