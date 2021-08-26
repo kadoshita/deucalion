@@ -17,48 +17,51 @@ describe('prometheus receiver', () => {
     test('post alert data', async () => {
         const dummyData: AlertManagerWebhookRequest = {
             receiver: 'webhook',
-            status: 'firing',
+            status: 'resolved',
             alerts: [
                 {
-                    status: 'firing',
+                    status: 'resolved',
                     labels: {
-                        alertname: 'InstanceDown',
+                        alertname: 'HighCPUUsage',
                         instance: '172.16.0.10:9100',
                         job: 'node',
-                        severity: 'critical'
+                        severity: 'warning'
                     },
                     annotations: {
-                        description: 'Instance Down',
-                        grafana_pannel_id: '18',
+                        description: '172.16.0.10:9100 has been high cpu usage for more than 5 minutes.',
+                        grafana_pannel_id: '4',
                         grafana_url: 'https://grafana.sublimer.me/render/d-solo/dz-DVsM7k/host-info?orgId=1',
-                        query: 'up{job="node"} == 0',
-                        title: 'InstanceDown',
+                        query: 'sum(avg(rate(node_cpu_seconds_total{mode!="idle",instance="172.16.0.10:9100"}[1m])) without (cpu)) by (instance) * 100',
+                        title: 'Instance 172.16.0.10:9100 High CPU usage',
                         value: '13.45'
                     },
-                    startsAt: '2021-08-23T15:56:05+09:00',
-                    endsAt: '0001-01-01T00:00:00Z',
+                    startsAt: '2021-08-26T21:53:00+09:00',
+                    endsAt: '2021-08-26T21:54:00+09:00',
                     generatorURL: 'https://example.com',
-                    fingerprint: '6bbfb5208e9543d7'
+                    fingerprint: '99a501b167b52194'
                 }
             ],
-            groupLabels: { alertname: 'InstanceDown', instance: '172.16.0.10:9100' },
+            groupLabels: {
+                alertname: 'HighCPUUsage',
+                instance: '172.16.0.10:9100'
+            },
             commonLabels: {
-                alertname: 'InstanceDown',
+                alertname: 'HighCPUUsage',
                 instance: '172.16.0.10:9100',
                 job: 'node',
-                severity: 'critical'
+                severity: 'warning'
             },
             commonAnnotations: {
-                description: 'Instance Down',
-                grafana_pannel_id: '18',
+                description: '172.16.0.10:9100 has been high cpu usage for more than 5 minutes.',
+                grafana_pannel_id: '4',
                 grafana_url: 'https://grafana.sublimer.me/render/d-solo/dz-DVsM7k/host-info?orgId=1',
-                query: 'up{job="node"} == 0',
-                title: 'InstanceDown',
+                query: 'sum(avg(rate(node_cpu_seconds_total{mode!="idle",instance="172.16.0.10:9100"}[1m])) without (cpu)) by (instance) * 100',
+                title: 'Instance 172.16.0.10:9100 High CPU usage',
                 value: '13.45'
             },
             externalURL: 'http://172.16.0.10:9093',
             version: '4',
-            groupKey: '{}:{alertname="InstanceDown", instance="172.16.0.10:9100"}',
+            groupKey: '{}:{alertname="HighCPUUsage", instance="172.16.0.10:9100"}',
             truncatedAlerts: 0
         };
         const res = await server.inject({
