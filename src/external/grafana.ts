@@ -22,7 +22,7 @@ export interface GetGraphImageURLParams {
 export const getGraphImageURL = async (params: GetGraphImageURLParams): Promise<string> => {
     const from = params.startAt.getTime();
     const to = params.endAt.getTime();
-    const grafanaGraphImgeURL = `${params.url}&var-hosts=${params.instance}&from=${from}&to=${to}&panelId=${params.panelId}&width=640&height=360&tz=Asia%2FTokyo`;
+    const grafanaGraphImgeURL = `${params.url}&var-hosts=${params.instance}&from=${from}&to=${to}&panelId=${params.panelId}&width=960&height=640&tz=Asia%2FTokyo`;
     
     const res = await fetch(grafanaGraphImgeURL, {
         headers: {
