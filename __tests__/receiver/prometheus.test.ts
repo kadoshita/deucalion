@@ -1,16 +1,20 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { AlertManagerWebhookRequest } from '../../src/message/prometheus';
+import * as router from '../../src/router';
 import { receiver } from '../../src/receiver';
 
 describe('prometheus receiver', () => {
     let server: FastifyInstance;
+    let routerMock: jest.SpyInstance;
 
     beforeAll(() => {
         server = fastify();
         server.register(receiver, { prefix: '/api/receiver' });
+        routerMock = jest.spyOn(router, 'handler');
     });
     afterAll(async () => {
         await server.close();
+        routerMock.mockRestore();
     });
 
 
@@ -72,6 +76,7 @@ describe('prometheus receiver', () => {
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toBe('OK');
+        expect(routerMock).toHaveBeenCalled();
     }, 10000);
 
     test('post invalid alert data', async () => {
@@ -85,6 +90,6 @@ describe('prometheus receiver', () => {
             payload: dummyData
         });
 
-        expect(res.statusCode).toBe(400);
+        expect(res.statusCode).toBe(200);
     });
 });
