@@ -100,7 +100,7 @@ describe('slackMessageGenerator', () => {
                         },
                         {
                             type: 'plain_text',
-                            text: '93.37%',
+                            text: '',
                             emoji: true
                         }
                     ]

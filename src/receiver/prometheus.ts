@@ -5,11 +5,11 @@ import * as router from '../router';
 
 export const prometheus: RouteHandlerMethod = async (req: FastifyRequest, reply: FastifyReply) => {
     try {
+        await reply.send('OK');
         const message = new PrometheusMessage(req.body);
         await router.handler(message);
-        return reply.send('OK');
+        return;
     } catch (err) {
         console.error(err.message);
-        return reply.code(400).send();
     }
 };
