@@ -2,13 +2,14 @@ import { query as PrometheusQuery } from '../external/prometheus';
 import { getGraphImageURL } from '../external/grafana';
 import { AlertsEntity, PrometheusMessage } from '../message';
 import { Message } from '../message/messageInterface';
-import { SlackAttachmentColor, SlackMessage, SlackMessageAttachment } from '../message/slack';
+import { SlackAttachmentColor, SlackMessage } from '../message/slack';
+import { SlackAlertMessage } from '../message/jsx/message';
 
 export const handle = async (message: Message): Promise<SlackMessage | void> => {
     switch (message.type) {
         case 'prometheus': {
-            const attachments = await convertPrometheusMessageToSlackMessage(message as PrometheusMessage);
-            const slackMessage: SlackMessage = new SlackMessage(attachments);
+            const messages = await convertPrometheusMessageToSlackMessage(message as PrometheusMessage);
+            const slackMessage: SlackMessage = new SlackMessage(messages.color, messages.message);
             return slackMessage;
         }
         default:
@@ -46,109 +47,18 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
         if (alert.annotations.query) {
             current_value = await PrometheusQuery(alert.annotations.query);
         }
-
-        const attachment: SlackMessageAttachment = {
-            color: (alert.status === 'resolved') ? '#359C4C' : severityToColor(alert.labels.severity),
-            blocks: [
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: alert.annotations.title,
-                        emoji: true
-                    }
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: alert.annotations.description
-                    }
-                },
-                {
-                    type: 'image',
-                    title: {
-                        type: 'plain_text',
-                        text: 'graph',
-                        emoji: true
-                    },
-                    image_url: image_url,
-                    alt_text: 'graph'
-
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Current Value',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: current_value,
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Severity',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: alert.labels.severity,
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Start At',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: (new Date(alert.startsAt)).toLocaleString('ja-JP'),
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'End At',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: (new Date(alert.endsAt)).toLocaleString('ja-JP'),
-                            emoji: true
-                        }
-                    ]
-                }
-            ]
-        };
-        return attachment;
+        const alertmessage = SlackAlertMessage({
+            title: alert.annotations.title,
+            description: alert.annotations.description,
+            image_url,
+            current_value,
+            severity: alert.labels.severity,
+            start_at: (new Date(alert.startsAt)).toLocaleString('ja-JP'),
+            end_at: (new Date(alert.endsAt)).toLocaleString('ja-JP')
+        });
+        return alertmessage;
     });
-    const slackMessage: SlackMessageAttachment[] = await Promise.all(alertPromises);
-    return slackMessage;
+    const color = (message.message.alerts[0].status === 'resolved') ? '#359C4C' : severityToColor(message.message.alerts[0].labels.severity);
+    const slackMessage = await Promise.all(alertPromises);
+    return { color, message: slackMessage[0] };
 };

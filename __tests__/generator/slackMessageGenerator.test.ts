@@ -1,8 +1,9 @@
 import crypto from 'crypto';
+import { jsxslack } from 'jsx-slack';
 import * as grafana from '../../src/external/grafana';
 import { slackMessageGenerator } from '../../src/generator';
 import { AlertManagerWebhookRequest, PrometheusMessage } from '../../src/message';
-import { SlackMessage, SlackMessageAttachment } from '../../src/message/slack';
+import { SlackMessage } from '../../src/message/slack';
 
 describe('slackMessageGenerator', () => {
     let getGraphImageURLMock: jest.SpyInstance;
@@ -61,107 +62,33 @@ describe('slackMessageGenerator', () => {
         };
         const dummyPrometheusMessage: PrometheusMessage = new PrometheusMessage(dummyData);
 
-        const attachments: SlackMessageAttachment[] = [{
-            color: '#BE281B',
-            blocks: [
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: dummyData.alerts[0].annotations.title,
-                        emoji: true
-                    }
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: dummyData.alerts[0].annotations.description
-                    }
-                },
-                {
-                    type: 'image',
-                    title: {
-                        type: 'plain_text',
-                        text: 'graph',
-                        emoji: true
-                    },
-                    image_url: 'https://example.com',
-                    alt_text: 'graph'
+        const attachment = jsxslack`
+            <Blocks>
+                <Header>${dummyData.alerts[0].annotations.title}</Header>
+                <Section>${dummyData.alerts[0].annotations.description}</Section>
+                <Image src='https://example.com' alt="graph"></Image>
+                <Section>
+                    <Field>Current Value</Field>
+                    <Field></Field>
+                </Section>
+                <Divider></Divider>
+                <Section>
+                    <Field>Severity</Field>
+                    <Field>${dummyData.alerts[0].labels.severity}</Field>
+                </Section>
+                <Divider></Divider>
+                <Section>
+                    <Field>Start At</Field>
+                    <Field>2021/8/22 15:12:57</Field>
+                </Section>
+                <Divider></Divider>
+                <Section>
+                    <Field>End At</Field>
+                    <Field>2021/8/22 15:13:57</Field>
+                </Section>
+            </Blocks>`;
 
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Current Value',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: '',
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Severity',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: dummyData.alerts[0].labels.severity,
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Start At',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: '2021/8/22 15:12:57',
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'End At',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: '2021/8/22 15:13:57',
-                            emoji: true
-                        }
-                    ]
-                }
-            ]
-        }];
-        const expectSlackMessage: SlackMessage = new SlackMessage(attachments);
+        const expectSlackMessage: SlackMessage = new SlackMessage('#BE281B', attachment);
         const slackMessage = await slackMessageGenerator.handle(dummyPrometheusMessage);
 
         expect(expectSlackMessage).toEqual(slackMessage);
