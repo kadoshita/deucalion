@@ -49,7 +49,7 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
         const attatchments: MessageAttachment[] = [{
             color,
             title: alert.annotations.title,
-            title_link: alert.annotations.grafana_url,
+            title_link: alert.annotations.dashboard,
             text: alert.annotations.description,
             fields: [
                 { title: 'severity', value: alert.labels.severity, short: false },
