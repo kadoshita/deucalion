@@ -3,14 +3,13 @@ import { getGraphImageURL } from '../external/grafana';
 import { AlertsEntity, PrometheusMessage } from '../message';
 import { Message } from '../message/messageInterface';
 import { SlackAttachmentColor, SlackMessage } from '../message/slack';
-import { SlackAlertMessage } from '../message/jsx/message';
+import { MessageAttachment } from '@slack/types';
 
-export const handle = async (message: Message): Promise<SlackMessage | void> => {
+export const handle = async (message: Message): Promise<SlackMessage[][] | void> => {
     switch (message.type) {
         case 'prometheus': {
             const messages = await convertPrometheusMessageToSlackMessage(message as PrometheusMessage);
-            const slackMessage: SlackMessage = new SlackMessage(messages.color, messages.message);
-            return slackMessage;
+            return messages;
         }
         default:
             break;
@@ -24,9 +23,8 @@ const severityToColor = (severity: string): SlackAttachmentColor => {
         default: return '#439FE0';
     }
 };
-const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage) => {
+const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage): Promise<SlackMessage[][]> => {
     const alertPromises = message.message.alerts.map(async (alert: AlertsEntity) => {
-
         let image_url = '';
         let current_value = '';
         if (alert.annotations.grafana_url && alert.annotations.grafana_pannel_id) {
@@ -47,18 +45,29 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
         if (alert.annotations.query) {
             current_value = await PrometheusQuery(alert.annotations.query);
         }
-        const alertmessage = SlackAlertMessage({
+        const color = (alert.status === 'resolved') ? '#359C4C' : severityToColor(alert.labels.severity);
+        const attatchments: MessageAttachment[] = [{
+            color,
             title: alert.annotations.title,
-            description: alert.annotations.description,
-            image_url,
-            current_value,
-            severity: alert.labels.severity,
-            start_at: (new Date(alert.startsAt)).toLocaleString('ja-JP'),
-            end_at: (new Date(alert.endsAt)).toLocaleString('ja-JP')
-        });
-        return alertmessage;
+            title_link: alert.annotations.grafana_url,
+            text: alert.annotations.description,
+            fields: [
+                { title: 'severity', value: alert.labels.severity, short: false },
+                { title: 'current_value', value: current_value, short: false },
+                { title: 'start_at', value: (new Date(alert.startsAt)).toLocaleString('ja-JP'), short: true },
+                { title: 'end_at', value: (new Date(alert.endsAt)).toLocaleString('ja-JP'), short: true }
+            ]
+        }];
+        const graphAttachment: MessageAttachment = {
+            color,
+            text: message.message.commonLabels.alertname,
+            image_url
+        };
+        const slackAttachmentMessage: SlackMessage = new SlackMessage(attatchments);
+        const slackBlockMessage: SlackMessage = new SlackMessage([graphAttachment]);
+        return [slackAttachmentMessage, slackBlockMessage];
     });
-    const color = (message.message.alerts[0].status === 'resolved') ? '#359C4C' : severityToColor(message.message.alerts[0].labels.severity);
-    const slackMessage = await Promise.all(alertPromises);
-    return { color, message: slackMessage[0] };
+
+    const messages = await Promise.all(alertPromises);
+    return messages;
 };
