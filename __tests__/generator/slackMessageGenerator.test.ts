@@ -1,5 +1,5 @@
+import { MessageAttachment } from '@slack/web-api';
 import crypto from 'crypto';
-import { jsxslack } from 'jsx-slack';
 import * as grafana from '../../src/external/grafana';
 import { slackMessageGenerator } from '../../src/generator';
 import { AlertManagerWebhookRequest, PrometheusMessage } from '../../src/message';
@@ -24,7 +24,7 @@ describe('slackMessageGenerator', () => {
         getGraphImageURLMock.mockRestore();
         randomUUIDMock.mockRestore();
     });
-    test('create slack message from prometheus message', async () => {
+    test('create slack message attachment from prometheus message', async () => {
         const dummyData: AlertManagerWebhookRequest = {
             version: '4',
             groupKey: '',
@@ -62,35 +62,25 @@ describe('slackMessageGenerator', () => {
         };
         const dummyPrometheusMessage: PrometheusMessage = new PrometheusMessage(dummyData);
 
-        const attachment = jsxslack`
-            <Blocks>
-                <Header>${dummyData.alerts[0].annotations.title}</Header>
-                <Section>${dummyData.alerts[0].annotations.description}</Section>
-                <Image src='https://example.com' alt="graph"></Image>
-                <Section>
-                    <Field>Current Value</Field>
-                    <Field></Field>
-                </Section>
-                <Divider></Divider>
-                <Section>
-                    <Field>Severity</Field>
-                    <Field>${dummyData.alerts[0].labels.severity}</Field>
-                </Section>
-                <Divider></Divider>
-                <Section>
-                    <Field>Start At</Field>
-                    <Field>2021/8/22 15:12:57</Field>
-                </Section>
-                <Divider></Divider>
-                <Section>
-                    <Field>End At</Field>
-                    <Field>2021/8/22 15:13:57</Field>
-                </Section>
-            </Blocks>`;
+        const attachments: MessageAttachment[] = [{
+            color: '#BE281B',
+            title: dummyData.alerts[0].annotations.title,
+            title_link: dummyData.alerts[0].annotations.grafana_url,
+            text: dummyData.alerts[0].annotations.description,
+            fields: [
+                { title: 'severity', value: dummyData.alerts[0].labels.severity, short: false },
+                { title: 'current_value', value: '', short: false },
+                { title: 'start_at', value: '2021/8/22 15:12:57', short: true },
+                { title: 'end_at', value: '2021/8/22 15:13:57', short: true }
+            ]
+        }];
 
-        const expectSlackMessage: SlackMessage = new SlackMessage('#BE281B', attachment);
+        const expectSlackMessage: SlackMessage = new SlackMessage(attachments);
         const slackMessage = await slackMessageGenerator.handle(dummyPrometheusMessage);
-
-        expect(expectSlackMessage).toEqual(slackMessage);
+        if (!slackMessage) {
+            expect(true).toBe(false);
+            return;
+        }
+        expect(expectSlackMessage).toEqual(slackMessage[0][0]);
     });
 });
