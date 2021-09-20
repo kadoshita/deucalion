@@ -1,8 +1,9 @@
+import { MessageAttachment } from '@slack/web-api';
 import crypto from 'crypto';
 import * as grafana from '../../src/external/grafana';
 import { slackMessageGenerator } from '../../src/generator';
 import { AlertManagerWebhookRequest, PrometheusMessage } from '../../src/message';
-import { SlackMessage, SlackMessageAttachment } from '../../src/message/slack';
+import { SlackMessage } from '../../src/message/slack';
 
 describe('slackMessageGenerator', () => {
     let getGraphImageURLMock: jest.SpyInstance;
@@ -23,7 +24,7 @@ describe('slackMessageGenerator', () => {
         getGraphImageURLMock.mockRestore();
         randomUUIDMock.mockRestore();
     });
-    test('create slack message from prometheus message', async () => {
+    test('create slack message attachment from prometheus message', async () => {
         const dummyData: AlertManagerWebhookRequest = {
             version: '4',
             groupKey: '',
@@ -61,109 +62,25 @@ describe('slackMessageGenerator', () => {
         };
         const dummyPrometheusMessage: PrometheusMessage = new PrometheusMessage(dummyData);
 
-        const attachments: SlackMessageAttachment[] = [{
+        const attachments: MessageAttachment[] = [{
             color: '#BE281B',
-            blocks: [
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: dummyData.alerts[0].annotations.title,
-                        emoji: true
-                    }
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: dummyData.alerts[0].annotations.description
-                    }
-                },
-                {
-                    type: 'image',
-                    title: {
-                        type: 'plain_text',
-                        text: 'graph',
-                        emoji: true
-                    },
-                    image_url: 'https://example.com',
-                    alt_text: 'graph'
-
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Current Value',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: '',
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Severity',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: dummyData.alerts[0].labels.severity,
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Start At',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: '2021/8/22 15:12:57',
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'End At',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: '2021/8/22 15:13:57',
-                            emoji: true
-                        }
-                    ]
-                }
+            title: dummyData.alerts[0].annotations.title,
+            title_link: dummyData.alerts[0].annotations.grafana_url,
+            text: dummyData.alerts[0].annotations.description,
+            fields: [
+                { title: 'severity', value: dummyData.alerts[0].labels.severity, short: false },
+                { title: 'current_value', value: '', short: false },
+                { title: 'start_at', value: '2021/8/22 15:12:57', short: true },
+                { title: 'end_at', value: '2021/8/22 15:13:57', short: true }
             ]
         }];
+
         const expectSlackMessage: SlackMessage = new SlackMessage(attachments);
         const slackMessage = await slackMessageGenerator.handle(dummyPrometheusMessage);
-
-        expect(expectSlackMessage).toEqual(slackMessage);
+        if (!slackMessage) {
+            expect(true).toBe(false);
+            return;
+        }
+        expect(expectSlackMessage).toEqual(slackMessage[0][0]);
     });
 });

@@ -1,73 +1,23 @@
-import { SlackMessage, SlackMessageAttachment } from '../../src/message/slack';
+import { Block, MessageAttachment } from '@slack/types';
+import { jsxslack } from 'jsx-slack';
+import { SlackMessage } from '../../src/message/slack';
 
 describe('slack message', () => {
     test('create new Slack Message', () => {
-        const attachments: SlackMessageAttachment[] = [{
+        const attachments: MessageAttachment[] = [{
             color: '#BE281B',
-            blocks: [
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: 'title',
-                        emoji: true
-                    }
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: 'description'
-                    }
-                },
-                {
-                    type: 'image',
-                    title: {
-                        type: 'plain_text',
-                        text: 'graph',
-                        emoji: true
-                    },
-                    image_url: 'https://example.com',
-                    alt_text: 'graph'
-
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Current Value',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: '93.37%',
-                            emoji: true
-                        }
-                    ]
-                },
-                {
-                    type: 'divider'
-                },
-                {
-                    type: 'section',
-                    fields: [
-                        {
-                            type: 'plain_text',
-                            text: 'Severity',
-                            emoji: true
-                        },
-                        {
-                            type: 'plain_text',
-                            text: 'severity',
-                            emoji: true
-                        }
-                    ]
-                }
+            text: 'description',
+            fields: [
+                { title: 'hoge', value: 'fuga', short: false }
             ]
         }];
+        const blocks = jsxslack`
+        <Blocks>
+            <Image src='https://example.com' alt="graph"></Image>
+        </Blocks>` as Block[];
+
         expect(() => {
-            new SlackMessage(attachments);
+            new SlackMessage(attachments, blocks);
         }).not.toThrowError();
     });
 });
