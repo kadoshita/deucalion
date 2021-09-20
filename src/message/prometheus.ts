@@ -30,6 +30,7 @@ export interface AlertsEntity {
         title: string;
         description: string;
         value?: string;
+        dashboard?: string;
         grafana_url?: string;
         grafana_pannel_id?: string;
         query?: string;

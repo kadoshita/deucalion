@@ -51,7 +51,8 @@ describe('slackMessageGenerator', () => {
                         title: 'dummy',
                         description: 'sample message',
                         grafana_pannel_id: '0',
-                        grafana_url: 'https://example.com'
+                        grafana_url: 'https://example.com',
+                        dashboard: 'https://example.com'
                     },
                     startsAt: '2021-08-22T06:12:57.011Z',
                     endsAt: '2021-08-22T06:13:57.011Z',
@@ -65,7 +66,7 @@ describe('slackMessageGenerator', () => {
         const attachments: MessageAttachment[] = [{
             color: '#BE281B',
             title: dummyData.alerts[0].annotations.title,
-            title_link: dummyData.alerts[0].annotations.grafana_url,
+            title_link: dummyData.alerts[0].annotations.dashboard,
             text: dummyData.alerts[0].annotations.description,
             fields: [
                 { title: 'severity', value: dummyData.alerts[0].labels.severity, short: false },
