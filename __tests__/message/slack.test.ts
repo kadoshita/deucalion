@@ -17,7 +17,7 @@ describe('slack message', () => {
         </Blocks>` as Block[];
 
         expect(() => {
-            new SlackMessage(attachments, blocks);
+            new SlackMessage('title', attachments, blocks);
         }).not.toThrowError();
     });
 });

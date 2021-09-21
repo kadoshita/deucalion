@@ -76,7 +76,7 @@ describe('slackMessageGenerator', () => {
             ]
         }];
 
-        const expectSlackMessage: SlackMessage = new SlackMessage(attachments);
+        const expectSlackMessage: SlackMessage = new SlackMessage(dummyData.alerts[0].annotations.title, attachments);
         const slackMessage = await slackMessageGenerator.handle(dummyPrometheusMessage);
         if (!slackMessage) {
             expect(true).toBe(false);

@@ -7,7 +7,7 @@ export class SlackMessage implements Message {
     readonly id: string;
     readonly type: MessageType;
 
-    constructor(readonly attachments?: MessageAttachment[], readonly blocks?: Block[]) {
+    constructor(readonly text: string, readonly attachments?: MessageAttachment[], readonly blocks?: Block[]) {
         this.id = randomUUID();
         this.type = 'slack';
     }
