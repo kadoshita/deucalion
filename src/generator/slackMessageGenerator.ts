@@ -5,7 +5,7 @@ import { Message } from '../message/messageInterface';
 import { SlackAttachmentColor, SlackMessage } from '../message/slack';
 import { MessageAttachment } from '@slack/types';
 
-export const handle = async (message: Message): Promise<SlackMessage[][] | void> => {
+export const handle = async (message: Message): Promise<SlackMessage[] | void> => {
     switch (message.type) {
         case 'prometheus': {
             const messages = await convertPrometheusMessageToSlackMessage(message as PrometheusMessage);
@@ -23,7 +23,7 @@ const severityToColor = (severity: string): SlackAttachmentColor => {
         default: return '#439FE0';
     }
 };
-const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage): Promise<SlackMessage[][]> => {
+const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage): Promise<SlackMessage[]> => {
     const alertPromises = message.message.alerts.map(async (alert: AlertsEntity) => {
         let image_url = '';
         let current_value = '';
@@ -46,26 +46,26 @@ const convertPrometheusMessageToSlackMessage = async (message: PrometheusMessage
             current_value = await PrometheusQuery(alert.annotations.query);
         }
         const color = (alert.status === 'resolved') ? '#359C4C' : severityToColor(alert.labels.severity);
-        const attatchments: MessageAttachment[] = [{
+        const attatchments: MessageAttachment = {
             color,
-            title: alert.annotations.title,
-            title_link: alert.annotations.dashboard,
+            fallback: 'alert message',
             text: alert.annotations.description,
             fields: [
                 { title: 'severity', value: alert.labels.severity, short: false },
                 { title: 'current_value', value: current_value, short: false },
                 { title: 'start_at', value: (new Date(alert.startsAt)).toLocaleString('ja-JP'), short: true },
                 { title: 'end_at', value: (new Date(alert.endsAt)).toLocaleString('ja-JP'), short: true }
-            ]
-        }];
+            ],
+        };
         const graphAttachment: MessageAttachment = {
             color,
-            text: message.message.commonLabels.alertname,
+            fallback: 'graph image',
+            title: alert.annotations.title,
+            title_link: alert.annotations.dashboard,
             image_url
         };
-        const slackAttachmentMessage: SlackMessage = new SlackMessage(attatchments);
-        const slackBlockMessage: SlackMessage = new SlackMessage([graphAttachment]);
-        return [slackAttachmentMessage, slackBlockMessage];
+        const slackAttachmentMessage: SlackMessage = new SlackMessage(alert.annotations.title, [attatchments, graphAttachment]);
+        return slackAttachmentMessage;
     });
 
     const messages = await Promise.all(alertPromises);

@@ -65,8 +65,7 @@ describe('slackMessageGenerator', () => {
 
         const attachments: MessageAttachment[] = [{
             color: '#BE281B',
-            title: dummyData.alerts[0].annotations.title,
-            title_link: dummyData.alerts[0].annotations.dashboard,
+            fallback: 'alert message',
             text: dummyData.alerts[0].annotations.description,
             fields: [
                 { title: 'severity', value: dummyData.alerts[0].labels.severity, short: false },
@@ -74,14 +73,20 @@ describe('slackMessageGenerator', () => {
                 { title: 'start_at', value: '2021/8/22 15:12:57', short: true },
                 { title: 'end_at', value: '2021/8/22 15:13:57', short: true }
             ]
+        }, {
+            color: '#BE281B',
+            fallback: 'graph image',
+            title: dummyData.alerts[0].annotations.title,
+            title_link: dummyData.alerts[0].annotations.dashboard,
+            image_url: 'https://example.com'
         }];
 
-        const expectSlackMessage: SlackMessage = new SlackMessage(attachments);
+        const expectSlackMessage: SlackMessage = new SlackMessage(dummyData.alerts[0].annotations.title, attachments);
         const slackMessage = await slackMessageGenerator.handle(dummyPrometheusMessage);
         if (!slackMessage) {
             expect(true).toBe(false);
             return;
         }
-        expect(expectSlackMessage).toEqual(slackMessage[0][0]);
+        expect(expectSlackMessage).toEqual(slackMessage[0]);
     });
 });

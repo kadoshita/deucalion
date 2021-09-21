@@ -8,6 +8,7 @@ export const send = async (messages: SlackMessage[]): Promise<void> => {
     for (const message of messages) {
         await client.chat.postMessage({
             channel: SLACK_POST_CHANNEL_ID,
+            text: message.text,
             attachments: message.attachments,
             blocks: message.blocks
         });
