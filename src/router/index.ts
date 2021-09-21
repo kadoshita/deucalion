@@ -7,9 +7,7 @@ export const handler = async (message: Message): Promise<void> => {
         case 'prometheus': {
             const slackMessages = await slackMessageGenerator.handle(message);
             if (slackMessages) {
-                for (const message of slackMessages) {
-                    await slackTransmitter.send(message);
-                }
+                await slackTransmitter.send(slackMessages);
             }
         }
     }
